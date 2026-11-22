@@ -1,12 +1,12 @@
-// A working best-game-01 entry (Node 22, standard library only): the game is this directory's
-// game/ folder, plain static files a desktop browser loads offline (game/index.html and its ES
-// modules, no library and no network request), and the program hands it in. It copies game/ and
-// screenshots/ from beside this file to /output and writes /output/dossier.json, the summary the
-// judge reads, with the vendored make.fun library. A starting point, not a winner: Block Dodger, a
-// plain 2D canvas game where a paddle dodges falling blocks and catches coins, with a title screen,
-// score, lives and levels, game over and restart, flat colours and no sound. Build your own game
-// (any genre, any library you vendor under game/, or none), put your 3 or 4 PNG or JPEG screenshots
-// in screenshots/ (the first by name is the cover) and run it.
+// The Gilded Vault — a casino heist game (Node 22, standard library only): the game is this
+// directory's game/ folder, plain static files a desktop browser loads offline (game/index.html
+// and its ES modules, no library and no network request), and the program hands it in. It copies
+// game/ and screenshots/ from beside this file to /output and writes /output/dossier.json, the
+// summary the judge reads, with the vendored make.fun library. The game: Marlowe slips into the
+// Aurum Grand casino vault — 5 guards with vision cones, 8 sweeping cameras, 12 laser grids, 3
+// vaults and the Casino Ledger, 180 seconds to grab the loot and reach the getaway van. The
+// screenshots in screenshots/ are real renders of the game's own code, staged with the
+// ?shot=cover|patrol|tools|escape scenes in game/src/shots.js (see shots.json).
 //
 // Serve it locally with `node serve.ts`, then open http://localhost:8080.
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:

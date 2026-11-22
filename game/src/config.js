@@ -1,61 +1,101 @@
-// Every tuning number and colour in one place. The playfield is a fixed 1280x720 logical area;
-// the renderer scales it to the window, so no rule below depends on the screen size.
+// THE GILDED VAULT — a casino-vault heist. config.js holds every number the rest of the
+// game reads: the canvas size, the clock, the alarm, the crew, the tools and the loot.
+// Change a number here and the whole heist retunes; no other file hard-codes a balance value.
 
-export const FIELD = { width: 1280, height: 720, groundY: 664 };
+/** Logical canvas size. The renderer scales this to the window; screenshots are 1280x800. */
+export const VIEW = { width: 1280, height: 800 };
 
-/** The simulation's fixed step, in seconds: 60 updates a second whatever the display's rate. */
+/** Height of the HUD bar across the top; the vault floor starts below it. */
+export const HUD_HEIGHT = 72;
+
+/** The vault floor rectangle, in canvas pixels. */
+export const FLOOR = { x: 0, y: HUD_HEIGHT, width: 1280, height: 800 - HUD_HEIGHT };
+
+/** Fixed simulation step, seconds. */
 export const STEP = 1 / 60;
 
-export const PLAYER = {
-  width: 72,
-  height: 24,
-  speed: 560,
-  invulnerable: 1.5,
+/** The heist clock: 180 seconds from the first move to the getaway door slamming shut. */
+export const TIME_LIMIT = 180;
+
+/** Alarm runs 0 to 100. At 100 the vault locks down and the heist is over. */
+export const ALARM_MAX = 100;
+/** Alarm drains this fast per second while nobody can see the thief. */
+export const ALARM_DECAY = 4;
+/** Alarm gained per second while a camera holds the thief in its cone. */
+export const ALARM_CAMERA_RATE = 26;
+/** Alarm gained per second while a guard holds the thief in its cone. */
+export const ALARM_GUARD_RATE = 14;
+/** Alarm gained the instant the thief crosses a laser beam. */
+export const ALARM_LASER_HIT = 12;
+/** Alarm gained when a guard catches the thief. */
+export const ALARM_CAUGHT = 25;
+
+/** The thief starts with 3 nerves. A catch costs one; at zero the crew walks away. */
+export const NERVES_START = 3;
+
+/** Player movement: base speed in pixels per second, and the thief's radius. */
+export const PLAYER = { speed: 205, radius: 13, grabRange: 34 };
+
+/** Guard numbers: patrol speed, chase speed, cone range and half-angle, suspicion time. */
+export const GUARD = {
+  patrolSpeed: 62,
+  chaseSpeed: 168,
+  coneRange: 185,
+  coneHalfAngle: 0.62,
+  /** Seconds of being watched before a guard is sure and gives chase. */
+  suspicionTime: 0.9,
+  /** How far a chasing guard gives up and walks back to patrol, in pixels. */
+  giveUpRange: 260,
+  radius: 14,
 };
 
-export const LIVES = 3;
-
-export const BLOCK = {
-  minWidth: 40,
-  maxWidth: 110,
-  height: 36,
-  speed: 240,
-  speedPerLevel: 30,
-  speedJitter: 90,
-  interval: 0.55,
-  intervalScale: 0.88,
-  minInterval: 0.14,
-  dodgePoints: 1,
+/** Camera numbers: sweep range, cone half-angle and sweep speed. */
+export const CAMERA = {
+  coneRange: 195,
+  coneHalfAngle: 0.5,
+  sweepSpeed: 0.55,
+  /** Seconds a camera needs to hold the thief before the alarm starts climbing. */
+  lockOnTime: 0.45,
 };
 
-export const COIN = {
-  size: 24,
-  speed: 190,
-  speedPerLevel: 14,
-  interval: 1.4,
-  intervalJitter: 0.8,
-  points: 10,
+/** Laser beams: how long one beam sleeps after it is tripped, in seconds. */
+export const LASER = { cooldown: 2.5, width: 3 };
+
+/** Tools, each with a price the crew pays from the take. */
+export const TOOLS = {
+  /** EMP: kills every camera for 10 s. Costs $400 of the take. */
+  emp: { key: '1', cost: 400, duration: 10, startCount: Infinity },
+  /** Smoke bomb: 3 charges. A cloud hides the thief for 6 s. */
+  smoke: { key: '2', cost: 0, duration: 6, startCount: 3 },
+  /** Disguise: 2 uses. Guards take the thief for staff for 8 s, but the thief walks slower. */
+  disguise: { key: '3', cost: 300, duration: 8, startCount: 2 },
 };
 
-/** Seconds of play per level, and the last level: speeds and spawn rates stop growing there. */
-export const LEVEL = { seconds: 12, max: 12 };
-
-/** How many falling things can exist at once; the pool is allocated once, at boot. */
-export const POOL_SIZE = 64;
-
-export const PALETTE = {
-  backdrop: '#11141b',
-  sky: '#1b1f2a',
-  ground: '#2a3040',
-  player: '#4fc3f7',
-  block: '#e5534b',
-  coin: '#f2c94c',
-  panel: '#252b38',
-  text: '#eef1f5',
-  muted: '#8b93a3',
+/** Loot values in dollars. */
+export const LOOT = {
+  goldBar: 500,
+  ledger: 1500,
+  /** Each gold bar carried slows the thief by this fraction, up to the cap below. */
+  slowPerBar: 0.04,
+  slowCap: 0.2,
+  /** Time bonus per second left on the clock when the thief escapes. */
+  timeBonusPerSecond: 10,
 };
 
-export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+/** Best-score key in localStorage. */
+export const BEST_KEY = 'gilded-vault-best';
 
-/** Where the best score is kept between visits (this browser only). */
-export const BEST_KEY = 'block-dodger.best';
+/** The getaway door: the strip along the bottom-right wall the thief must reach with loot. */
+export const EXIT = { x: 1120, y: 748, width: 130, height: 52 };
+
+/** The service door the thief slips in through, bottom-left. */
+export const ENTRANCE = { x: 30, y: 748, width: 130, height: 52 };
+
+/** How close the thief must stand to a vault door or the ledger desk to grab it. */
+export const GRAB = { vaultRange: 46, ledgerRange: 40 };
+
+/** Smoke cloud radius in pixels; a thief inside it cannot be seen at all. */
+export const SMOKE_RADIUS = 74;
+
+/** Disguise walk speed multiplier while the thief is dressed as casino staff. */
+export const DISGUISE_SPEED = 0.72;
